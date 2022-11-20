@@ -1,0 +1,24 @@
+﻿@model Project_Karel_Gortz.Models.ModelBinding.CommentBindingModel
+@{
+    string id = "CC" + Guid.NewGuid().ToString("N");
+
+    <div>
+        <p>
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#@id" aria-expanded="false" aria-controls="collapseExample">
+                New Comment
+            </button>
+        </p>
+        <div class="collapse" id="@id">
+            <form asp-controller="Fixture" asp-action="CreateComment" method="post" class="card card-body">
+                <div class="form-group">
+                    <label for="Content"></label>
+                    <input asp-for="Content" type="text" name="Content" class="form-control" id="CommentContent" placeholder="Content">
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                <input name="PostId" type="hidden" value="@Model.PostId" />
+                <input name="FixtureId" type="hidden" value="@Model.FixtureId" />
+                <button type="submit" class="btn btn-primary">New Comment</button>
+            </form>
+        </div>
+    </div>
+}

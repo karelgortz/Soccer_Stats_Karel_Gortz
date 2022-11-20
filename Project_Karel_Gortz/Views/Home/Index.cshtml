@@ -1,0 +1,14 @@
+﻿@model List<Project_Karel_Gortz.Models.ViewModels.FixtureViewModel>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4 fw-bold">Welcome to SoccerStats!</h1>
+</div>
+
+<h3>Latest Matches</h3>
+@foreach (var item in Model.GetRange(Model.Count() - 5, 5))
+{
+    @await Html.PartialAsync("_FixtureHeader", item)
+}

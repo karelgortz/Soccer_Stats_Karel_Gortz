@@ -1,0 +1,174 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using Project_Karel_Gortz.Models.Stats
+@using System.Security.Principal
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Identity
+@using Project_Karel_Gortz.Models.Users
+@inject UserManager<CustomUser> userManager
+@inject IAuthorizationService authService
+@{
+    ViewData["Title"] = "Fixture Details Page";
+}
+
+@model Project_Karel_Gortz.Models.ViewModels.FixtureDetailsViewModel
+<div class="container">
+    <div class="row border bg-light" style="padding: 8px;">
+        <div class="col-sm">
+            <img src="@Model.Hometeam.Logo" alt="logo of home team" class="w-20 h-20 mx-auto d-block">
+        </div>
+        <div class="col-sm text-end" style="margin:auto">
+            <p class="w-15 align-right" style="margin:auto">@Model.Hometeam.Name</p>
+        </div>
+        <div class="col-sm text-center" style="margin:auto">
+            <p class="w-15" style="margin:auto"><strong>@Model.HomeGoals - @Model.Awaygoals</strong></p>
+            <p class="w-15" style="margin:auto">@Model.League.Name</p>
+            <p class="w-15" style="margin:auto">@Model.Round</p>
+            <p class="w-15" style="margin:auto">@Model.Referee</p>
+            <p class="w-15" style="margin:auto">@Model.Venue.Name</p>
+        </div>
+        <div class="col-sm text-start" style="margin:auto">
+            <p class="w-15" style="margin:auto">@Model.Awayteam.Name</p>
+        </div>
+        <div class="col-sm">
+            <a><img src="@Model.Awayteam.Logo" alt="logo of away team" class="w-20 h-20 mx-auto d-block"></a>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+
+        <div class="col" style="text-align: -webkit-center; padding:0px">
+            <table class="bg-light w-100">
+                <tbody>
+                    @{
+                        for (var i = 0; i < @Model.Homestats.Count(); i++)
+                        {
+                            <tr class="border">
+                                @if (@Model.Homestats[i].Value == null)
+                                {
+                                    <td style="padding:8px" class="text-start">0</td>
+                                }
+                                else
+                                {
+                                    <td style="padding:8px" class="text-start">@Model.Homestats[i].Value</td>
+                                }
+                                <th style="padding:8px" class="text-center">@Model.Homestats[i].Type</th>
+                                @if (@Model.Awaystats[i].Value == null)
+                                {
+                                    <td style="padding:8px" class="text-start">0</td>
+                                }
+                                else
+                                {
+                                    <td style="padding:8px" class="text-start">@Model.Awaystats[i].Value</td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<h3>Posts:</h3>
+<div class="container">
+    <div style="margin-left: 25px; padding-left: 10px" class="border-start">
+        @if (Model.Posts.Count() == 0)
+        {
+            <p>Be the first one to post on this fixture!</p>
+        }
+        else
+        {
+            @foreach (var post in @Model.Posts)
+            {
+                if ((bool)post.IsDeleted)
+                {
+                    <h4>[Deleted]</h4>
+                    <p>[This post has been deleted]</p>
+                }
+                else
+                {
+                    <h4>@post.Title</h4>
+                    <p>@post.TimeStamp - @post.Author.FirstName @post.Author.LastName</p>
+                    <p>@post.Content</p>
+                        @if ((await authService.AuthorizeAsync(User, "AdminOnly")).Succeeded || userManager.GetUserId(User) == post.Author.Id)
+                        {
+                            <div class="col">
+                                <form class="d-inline-block my-2" asp-controller="Fixture" asp-action="DeletePost">
+                                    <input hidden name="postId" value="@post.Id">
+                                    <input hidden name="fixId" value="@Model.Id">
+                                    <button class="btn btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        }
+                        @if (userManager.GetUserId(User) == post.Author.Id)
+                        {
+                            Project_Karel_Gortz.Models.ModelBinding.PostBindingModel EditPostModel = new Project_Karel_Gortz.Models.ModelBinding.PostBindingModel();
+                            EditPostModel.PostId = post.Id;
+                            EditPostModel.FixtureId = Model.Id;
+                            @await Html.PartialAsync("_EditPost", EditPostModel)
+                            ;
+                        }
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <p>Log in to create comments!</p>
+                        }
+                        else
+                        {
+                            Project_Karel_Gortz.Models.ModelBinding.CommentBindingModel CreateCommentModel = new Project_Karel_Gortz.Models.ModelBinding.CommentBindingModel();
+                            CreateCommentModel.PostId = post.Id;
+                            CreateCommentModel.FixtureId = Model.Id;
+                            @await Html.PartialAsync("_CreateComment", CreateCommentModel)
+                            ;
+                        }
+                }
+
+                foreach (var comment in @post.Comments)
+                {
+                    if ((bool)comment.IsDeleted)
+                    {
+                        <div style="margin-left: 25px; padding-left: 10px" class="border-start">
+                            <h4>[Deleted]</h4>
+                            <p>[This comment has been deleted]</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="margin-left: 25px; padding-left: 10px" class="border-start">
+                            <p>@comment.TimeStamp - @comment.Author.FirstName @comment.Author.LastName</p>
+                            <p>@comment.Content</p>
+                            @if ((await authService.AuthorizeAsync(User, "AdminOnly")).Succeeded || userManager.GetUserId(User) == post.Author.Id)
+                            {
+                                <form class="d-inline-block my-2" asp-controller="Fixture" asp-action="DeleteComment">
+                                    <input hidden name="commentId" value="@comment.Id">
+                                    <input hidden name="fixId" value="@Model.Id">
+                                    <button class="btn btn-danger">Delete</button>
+                                </form>
+                            }
+                            @if (userManager.GetUserId(User) == post.Author.Id)
+                            {
+                                Project_Karel_Gortz.Models.ModelBinding.CommentBindingModel EditCommentModel = new Project_Karel_Gortz.Models.ModelBinding.CommentBindingModel();
+                                EditCommentModel.CommentId = comment.Id;
+                                EditCommentModel.FixtureId = Model.Id;
+                                @await Html.PartialAsync("_EditComment", EditCommentModel)
+                                ;
+                            }
+                        </div>
+                    }
+
+                }
+            }
+        }
+    </div>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <p>Log in to create posts!</p>
+    }
+    else
+    {
+        Project_Karel_Gortz.Models.ModelBinding.PostBindingModel CreatePostModel = new Project_Karel_Gortz.Models.ModelBinding.PostBindingModel();
+        CreatePostModel.FixtureId = Model.Id;
+        @await Html.PartialAsync("_CreatePost", CreatePostModel)
+        ;
+    }
+
+</div>

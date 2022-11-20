@@ -1,0 +1,10 @@
+﻿@model List<Project_Karel_Gortz.Models.ViewModels.FixtureViewModel>
+@{
+    ViewData["Title"] = "All Fixtures Page";
+}
+
+<h3>All Matches</h3>
+@foreach (var item in Model)
+{
+    @await Html.PartialAsync("_FixtureHeader", item)
+}

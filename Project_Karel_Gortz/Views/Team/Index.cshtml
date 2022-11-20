@@ -1,0 +1,21 @@
+﻿@model List<Project_Karel_Gortz.Models.ViewModels.TeamViewModel>
+@{
+    ViewData["Title"] = "All Teams Page";
+}
+<h3>All Teams</h3>
+@foreach (var item in Model)
+{
+    <div class="container-fluid">
+        <a asp-action="LatestGames" asp-controller="Team" asp-route-teamId="@item.TeamId" class="text-reset text-decoration-none">
+            <div class="row border bg-light p-2">
+                <div class="col">
+                    <img src="@item.Logo" alt="logo of home team">
+                </div>
+                <div class="col d-flex align-items-center justify-content-center fw-bold">
+                    <p class="">@item.Name</p>
+                </div>
+
+            </div>
+        </a>
+    </div>
+}

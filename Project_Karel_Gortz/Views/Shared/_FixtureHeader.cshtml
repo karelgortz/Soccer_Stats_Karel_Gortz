@@ -1,0 +1,24 @@
+﻿@model Project_Karel_Gortz.Models.ViewModels.FixtureViewModel
+
+
+<div class="container-fluid">
+    <a asp-action="Details" asp-controller="Fixture" asp-route-fixId="@Model.Id" class="text-reset text-decoration-none">
+        <div class="row border bg-light p-2">
+            <div class="col">
+                <img src="@Model.Hometeam.Logo" alt="logo of home team">
+            </div>
+            <div class="col d-flex align-items-center justify-content-end">
+                <p class="">@Model.Hometeam.Name</p>
+            </div>
+            <div class="col d-flex align-items-center justify-content-center">
+                <p class="m-auto"><strong>@Model.HomeGoals - @Model.Awaygoals</strong></p>
+            </div>
+            <div class="col d-flex align-items-center justify-content-start">
+                <p class="m-auto">@Model.Awayteam.Name</p>
+            </div>
+            <div class="col">
+                <img src="@Model.Awayteam.Logo" alt="logo of away team">
+            </div>
+        </div>
+    </a>
+</div>

@@ -1,0 +1,28 @@
+﻿@model Project_Karel_Gortz.Models.ModelBinding.PostBindingModel
+@{
+    string id = "EP" + Guid.NewGuid().ToString("N");
+<div>
+    <p>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#@id" aria-expanded="false" aria-controls="collapseExample">
+            Edit Post
+        </button>
+    </p>
+    <div class="collapse" id="@id">
+        <form asp-controller="Fixture" asp-action="EditPost" method="post" class="card card-body">
+            <div class="form-group">
+                <label for="Title"></label>
+                <input  asp-for="Title" type="text" name="Title" class="form-control" id="Title" placeholder="Title">
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="Content"></label>
+                <input asp-for="Content" type="text" name="Content" class="form-control" id="Content" placeholder="Content">
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+            <input name="PostId" type="hidden" value="@Model.PostId"/>
+            <input name="FixtureId" type="hidden" value="@Model.FixtureId"/>
+            <button type="submit" class="btn btn-primary">Edit</button>
+        </form>
+    </div>
+</div>
+}
