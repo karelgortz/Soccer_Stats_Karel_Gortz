@@ -28,7 +28,7 @@ namespace Project_Karel_Gortz.Data
             base.OnModelCreating(builder);
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "api-football-v1.p.rapidapi.com");
-            client.DefaultRequestHeaders.Add("X-RapidAPI-Key", "09b2b8f4a2mshe3a1a84750d7ba2p1cc3c2jsn69cdc70e4220");
+            client.DefaultRequestHeaders.Add("X-RapidAPI-Key", "");
             var response = client.GetStringAsync("https://api-football-v1.p.rapidapi.com/v3/fixtures?league=78&season=2021");
             var responseBody = response.Result;
             TotalFixtureResponse jsonresponse = JsonConvert.DeserializeObject<TotalFixtureResponse>(responseBody);
